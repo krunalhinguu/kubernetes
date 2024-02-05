@@ -17,11 +17,9 @@ limitations under the License.
 package cadvisor
 
 import (
-	"strings"
-
 	cadvisorapi "github.com/google/cadvisor/info/v1"
 	cadvisorapi2 "github.com/google/cadvisor/info/v2"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	v1helper "k8s.io/kubernetes/pkg/apis/core/v1/helper"
 )
@@ -32,7 +30,7 @@ const (
 	// github.com/google/cadvisor/tree/master/container/crio/client.go
 	// Note that however we only match on the suffix, as /var/run is often a
 	// symlink to /run, so the user can specify either path.
-	CrioSocketSuffix = "run/crio/crio.sock"
+	CrioSocketSuffix     = "run/crio/crio.sock"
 	CrioSocket           = "/var/run/crio/crio.sock"
 	CriDockerdSocketv123 = "/var/run/dockershim.sock"
 	CriDockerdSocketv124 = "/var/run/cri-dockerd.sock"
