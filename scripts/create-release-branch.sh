@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-
+MAX_VERSION="v1.33.0"
 NEW_RELEASE_BRANCHES=()
 
 # Define temporary files
@@ -27,12 +27,24 @@ if ! git remote get-url upstream &>/dev/null; then
 fi
 
 # Fetch upstream tags
-git fetch --tags --quiet upstream || true
+git fetch --tags --quiet --force upstream || true
 
 # Process each tag
 for tag in $NEW_TAGS; do
     echo "========================================================================================"
     echo "[INFO] Processing version: ${tag}"
+
+    # Skip if tag > MAX_VERSION
+    if [[ "$(printf '%s\n' "$tag" "$MAX_VERSION" | sort -V | tail -1)" == "$tag" ]]; then
+        echo "[INFO] Skipping version $tag as it is >= $MAX_VERSION"
+        continue
+    fi
+
+    # Skip if the tag does not exist locally
+    if ! git rev-parse "refs/tags/$tag" >/dev/null 2>&1; then
+        echo "[WARN] Tag $tag does not exist locally. Skipping."
+        continue
+    fi
     
     # Check if the branch already exist
     if git show-ref --verify --quiet refs/remotes/origin/release-${tag}; then
